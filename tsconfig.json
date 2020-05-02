@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "alwaysStrict": true,
+    "strict": true,
+    "outDir": "dist",
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"]
+}

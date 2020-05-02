@@ -1,0 +1,11 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "globals": {
+    "BigInt": true
+  },
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "extends": ["standard"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error"
+  }
+}
