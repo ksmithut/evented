@@ -23,8 +23,8 @@ export type EventHandler<
 ) => z.infer<TAggregate>
 
 export type Aggregate<TAggregate extends z.ZodObject<any>> = {
-  readonly name: string
-  readonly commandTypes: string[]
+  readonly _name: string
+  readonly _commandTypes: string[]
 
   command: <TCommand extends MessageType<any>>(
     commandType: TCommand,
@@ -83,11 +83,11 @@ export function createAggregate<TAggregate extends z.ZodObject<any>> ({
   }
 
   const aggregate: Aggregate<TAggregate> = {
-    get name () {
+    get _name () {
       return name
     },
 
-    get commandTypes () {
+    get _commandTypes () {
       return Array.from(commandHandlers.keys())
     },
 

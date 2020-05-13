@@ -9,7 +9,7 @@ export class DuplicateCommandHandler extends Error {
     aggregate2: Aggregate<any>
   ) {
     super(
-      `command type "${type}" is being handled by multiple aggregates (${aggregate1.name}, ${aggregate2.name})`
+      `command type "${type}" is being handled by multiple aggregates (${aggregate1._name}, ${aggregate2._name})`
     )
     Error.captureStackTrace(this, this.constructor)
     this.code = 'DUPLICATE_COMMAND_HANDLER'
@@ -24,7 +24,7 @@ export class UnableToIdentityAggregateStream extends Error {
   details: { type: string }
   constructor (type: string, aggregate: Aggregate<any>) {
     super(
-      `commant type "${type}" not able to identity stream in aggregate "${aggregate.name}"`
+      `commant type "${type}" not able to identity stream in aggregate "${aggregate._name}"`
     )
     Error.captureStackTrace(this, this.constructor)
     this.code = 'UNABLE_TO_IDENTIFY_AGGREGATE_STREAM'
@@ -39,7 +39,7 @@ export class UnhandledAggregateCommand extends Error {
   details: { type: string }
   constructor (type: string, aggregate: Aggregate<any>) {
     super(
-      `command type "${type}" cannot be handled by aggregate "${aggregate.name}"`
+      `command type "${type}" cannot be handled by aggregate "${aggregate._name}"`
     )
     Error.captureStackTrace(this, this.constructor)
     this.code = 'UNHANDLED_AGGREGATE_COMMAND'

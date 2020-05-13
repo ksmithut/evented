@@ -21,7 +21,7 @@ export function createApp ({
   subscriptions: readonly Subscription[]
 }) {
   const commandMapping = aggregates.reduce((typeMapping, aggregate) => {
-    return aggregate.commandTypes.reduce((typeMapping, type) => {
+    return aggregate._commandTypes.reduce((typeMapping, type) => {
       const existingAggregate = typeMapping.get(type)
       if (existingAggregate) {
         throw new DuplicateCommandHandler(type, aggregate, existingAggregate)
