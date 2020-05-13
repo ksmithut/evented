@@ -1,4 +1,4 @@
-import { Aggregate } from './evented-types'
+import { Aggregate } from './aggregate'
 
 export class DuplicateCommandHandler extends Error {
   code: string

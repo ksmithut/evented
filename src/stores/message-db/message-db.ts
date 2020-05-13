@@ -16,7 +16,7 @@ import {
   streamVersion,
   writeMessage
 } from './functions'
-import { install, update1_0_0 } from './install' // eslint-disable-line camelcase
+import { install, update1_0_0, update1_2_2 } from './install' // eslint-disable-line camelcase
 
 export function createMessageStore (postgresURI: string) {
   const db = new Pool({ connectionString: postgresURI })
@@ -30,13 +30,15 @@ export function createMessageStore (postgresURI: string) {
   return {
     install: install.bind(null, postgresURI),
     update1_0_0: update1_0_0.bind(null, postgresURI),
+    update1_2_2: update1_2_2.bind(null, postgresURI),
     close: () => db.end(),
-
+    // Required message store functions
     writeMessage: writeMessage.bind(null, db),
     getStreamMessages: getStreamMessages.bind(null, db),
     getCategoryMessages: getCategoryMessages.bind(null, db),
     getLastStreamMessage: getLastStreamMessage.bind(null, db),
     getAllMessages: getAllMessages.bind(null, db),
+    // Additional functions exposed by message-db
     streamVersion: streamVersion.bind(null, db),
     id: id.bind(null, db),
     cardinalId: cardinalId.bind(null, db),

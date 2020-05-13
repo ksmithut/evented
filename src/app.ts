@@ -1,10 +1,15 @@
-import {
-  Aggregate,
-  EventedApplication,
-  MessageStore,
-  Subscription
-} from './evented-types'
+import { MessageStore } from './stores/common'
+import { Aggregate } from './aggregate'
+import { Subscription } from './subscription'
 import { DuplicateCommandHandler, UnhandledCommand } from './errors'
+
+export type EventedApplication = {
+  dispatch: (
+    messageId: string,
+    command: { type: string; data: object }
+  ) => Promise<bigint | null>
+  start: () => Promise<() => void>
+}
 
 export function createApp ({
   messageStore,
@@ -37,13 +42,12 @@ export function createApp ({
       return result
     },
     async start () {
-      await Promise.all(
+      const subscriptionStoppers = await Promise.all(
         subscriptions.map(subscription => subscription._start(messageStore))
       )
-      return app.stop
-    },
-    async stop () {
-      await Promise.all(subscriptions.map(subscription => subscription._stop()))
+      return async () => {
+        await Promise.all(subscriptionStoppers.map(stop => stop()))
+      }
     }
   }
   return app

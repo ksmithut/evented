@@ -3,13 +3,45 @@ import {
   UnhandledAggregateCommand,
   UnableToIdentityAggregateStream
 } from './errors'
-import {
-  MessageType,
-  Aggregate,
-  CommandHandler,
-  EventHandler,
-  StreamMessage
-} from './evented-types'
+import { MessageStore, StreamMessage } from './stores/common'
+import { MessageType, ExtractSchema } from './message-type'
+
+export type CommandHandler<
+  TAggregate extends z.ZodObject<any>,
+  TCommand extends MessageType<any>
+> = (
+  aggregate: z.infer<TAggregate>,
+  command: ExtractSchema<TCommand>
+) => { type: string; data: object } | Error | void | null
+
+export type EventHandler<
+  TAggregate extends z.ZodObject<any>,
+  TEvent extends MessageType<any>
+> = (
+  aggregate: z.infer<TAggregate>,
+  event: ExtractSchema<TEvent>
+) => z.infer<TAggregate>
+
+export type Aggregate<TAggregate extends z.ZodObject<any>> = {
+  readonly name: string
+  readonly commandTypes: string[]
+
+  command: <TCommand extends MessageType<any>>(
+    commandType: TCommand,
+    handler: CommandHandler<TAggregate, TCommand>
+  ) => Aggregate<TAggregate>
+
+  event: <TEvent extends MessageType<any>>(
+    eventType: TEvent,
+    handler: EventHandler<TAggregate, TEvent>
+  ) => Aggregate<TAggregate>
+
+  _runCommand: (
+    messageId: string,
+    messageStore: MessageStore,
+    incoming: { type: string; data: any }
+  ) => Promise<bigint | null>
+}
 
 export function createAggregate<TAggregate extends z.ZodObject<any>> ({
   name,

@@ -1,6 +1,10 @@
 import { Pool } from 'pg'
-import { StreamMessage } from '../../evented-types'
-import { WrongExpectedVersion } from './errors'
+import { StreamMessage } from '../common'
+import {
+  WrongExpectedVersion,
+  InvalidUUID,
+  DuplicateMessageId
+} from '../errors'
 
 type RawStreamMessage = {
   id: string
@@ -240,7 +244,9 @@ export async function writeMessage (
       expectedVersion
     ])
     .catch(err => {
+      InvalidUUID.assert(err)
       WrongExpectedVersion.assert(err)
+      DuplicateMessageId.assert(err, id)
       throw err
     })
   const streamVersion = result.rows[0].write_message

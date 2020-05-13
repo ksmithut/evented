@@ -1,8 +1,20 @@
-export * as messageDb from './stores/message-db/message-db'
-export { createMessageType } from './create-message-type'
-export { createAggregate } from './create-aggregate'
-export { createApp } from './create-app'
-export { createSubscription } from './create-subscription'
+import * as messageDb from './stores/message-db/message-db'
+
+export { createMessageType, MessageType, ExtractSchema } from './message-type'
 export {
-  EventedApplication
-} from './evented-types'
+  createAggregate,
+  Aggregate,
+  CommandHandler,
+  EventHandler
+} from './aggregate'
+export { createApp, EventedApplication } from './app'
+export {
+  createSubscription,
+  Subscription,
+  SubscriptionErrorHandler,
+  SubscriptionEventHandler
+} from './subscription'
+
+export const stores = {
+  messageDb
+}
