@@ -14,24 +14,24 @@
   "dependencies": {
     "@eventide/message-db": "^1.2.3",
     "pg": "^8.2.1",
-    "uuid": "^8.0.0",
+    "uuid": "^8.1.0",
     "zod": "^1.6.1"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.2",
-    "@types/node": "^14.0.1",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^14.0.5",
     "@types/pg": "^7.14.3",
-    "@types/uuid": "^7.0.3",
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
+    "@types/uuid": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.0.1",
+    "@typescript-eslint/parser": "^3.0.1",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
-    "lint-staged": "^10.2.2",
+    "lint-staged": "^10.2.6",
     "nodemon": "^2.0.4",
     "prettier-standard": "^16.3.0",
     "standard": "^14.3.4",
     "ts-jest": "^26.0.0",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
   },
   "resolutions": {
     "eslint": "6.8.0"
