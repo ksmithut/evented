@@ -69,56 +69,60 @@ export function createSubscription ({
       let running = false
       let currentPosition = 0n
       let messagesSinceLastPositionWrite = 0
+      const savePosition = async () => {
+        if (subscriberStreamName) {
+          await messageStore.writeMessage({
+            id: uuidv4(),
+            streamName: subscriberStreamName,
+            data: { position: String(currentPosition) },
+            type: '$EventedSubscriptionPositionUpdated'
+          })
+        }
+      }
 
-      const polling = Promise.resolve()
-        .then(async () => {
-          const queryMessages = getQueryMessages(messageStore, stream)
-          // Load current position
-          currentPosition = await getStreamPosition(
-            messageStore,
-            subscriberStreamName
+      async function startPolling () {
+        const queryMessages = getQueryMessages(messageStore, stream)
+        // Load current position
+        currentPosition = await getStreamPosition(
+          messageStore,
+          subscriberStreamName
+        )
+        // eslint-disable-next-line no-unmodified-loop-condition
+        while (running) {
+          const messages = await queryMessages(
+            currentPosition + 1n,
+            BigInt(batchSize)
           )
-          // eslint-disable-next-line no-unmodified-loop-condition
-          while (running) {
-            const messages = await queryMessages(
-              currentPosition + 1n,
-              BigInt(batchSize)
-            )
-            for (const message of messages) {
-              // Handle message
-              const typeHandler = messageHandlers.get(message.type)
-              if (typeHandler) {
-                const cleanedData = typeHandler.schema.parse(message.data)
-                // TODO metadata
-                await typeHandler.handler(cleanedData)
-              }
-              // Update current position
-              currentPosition = message.globalPosition
-              messagesSinceLastPositionWrite += 1
-              // Check our update position poll
-              if (messagesSinceLastPositionWrite >= positionUpdateInterval) {
-                messagesSinceLastPositionWrite = 0
-                if (subscriberStreamName) {
-                  await messageStore.writeMessage({
-                    id: uuidv4(),
-                    streamName: subscriberStreamName,
-                    data: { position: String(currentPosition) },
-                    type: '$EventedSubscriptionPositionUpdated'
-                  })
-                }
-              }
+          for (const message of messages) {
+            // Handle message
+            const typeHandler = messageHandlers.get(message.type)
+            if (typeHandler) {
+              const cleanedData = typeHandler.schema.parse(message.data)
+              // TODO metadata
+              await typeHandler.handler(cleanedData)
             }
-            if (messages.length === 0) {
-              await new Promise(resolve => setTimeout(resolve, pollInterval))
+            // Update current position
+            currentPosition = message.globalPosition
+            messagesSinceLastPositionWrite += 1
+            // Check our update position poll
+            if (messagesSinceLastPositionWrite >= positionUpdateInterval) {
+              messagesSinceLastPositionWrite = 0
+              await savePosition()
             }
           }
+          if (messages.length === 0) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        }
+        await savePosition
+      }
+
+      const polling = startPolling().catch(err => {
+        onError(err, {
+          subscriptionId,
+          stream
         })
-        .catch(err => {
-          onError(err, {
-            subscriptionId,
-            stream
-          })
-        })
+      })
 
       return async () => {
         running = false
