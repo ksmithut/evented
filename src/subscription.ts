@@ -58,15 +58,15 @@ export function createSubscription ({
     : undefined
 
   const subscription: Subscription = {
-    handle (eventType, handler) {
-      messageHandlers.set(eventType.type, {
-        schema: eventType.schema,
+    handle (messageType, handler) {
+      messageHandlers.set(messageType.type, {
+        schema: messageType.schema,
         handler
       })
       return subscription
     },
     _start (messageStore) {
-      let running = false
+      let running = true
       let currentPosition = 0n
       let messagesSinceLastPositionWrite = 0
       const savePosition = async () => {
@@ -114,7 +114,7 @@ export function createSubscription ({
             await new Promise(resolve => setTimeout(resolve, pollInterval))
           }
         }
-        await savePosition
+        await savePosition()
       }
 
       const polling = startPolling().catch(err => {
